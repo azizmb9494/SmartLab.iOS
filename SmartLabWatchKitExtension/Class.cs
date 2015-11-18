@@ -29,6 +29,12 @@ namespace SmartLabWatchKitExtension
 			this.Location = location;
 			this.Count = times;
 		}
+
+		public bool IsBizCalc()
+		{
+			string pod = this.Location.Substring (0, this.Location.Length - 1);
+			return pod == "36" || pod == "40" || pod == "44" || pod == "47" || pod == "48"; 
+		}
 	}
 
 	public class Calendar {

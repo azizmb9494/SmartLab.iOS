@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Drawing;
-
+using CoreGraphics;
 using NotificationCenter;
 using Foundation;
 using Social;
@@ -10,8 +11,17 @@ namespace SmartLabToday
 {
 	public partial class TodayViewController : UIViewController, INCWidgetProviding
 	{
+		private UILabel TimeLbl;
 		public TodayViewController (IntPtr handle) : base (handle)
 		{
+			this.View.BackgroundColor = UIColor.Clear;
+			this.TimeLbl = new UILabel (new CGRect (40, 0, this.View.Frame.Width-80, 22)) {
+				Text = "Never Updated",
+				TextAlignment = UITextAlignment.Left,
+				TextColor = UIColor.White
+			};
+
+			this.Add (this.TimeLbl);
 		}
 
 		public override void DidReceiveMemoryWarning ()
@@ -25,20 +35,130 @@ namespace SmartLabToday
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
+			foreach (var v in this.View.Subviews) {
+				if (v.GetType() == typeof(BlimpView)) {
+					v.RemoveFromSuperview();
+				}
+			}
 
-			// Do any additional setup after loading the view.
+			NSTimer.CreateRepeatingScheduledTimer (6, delegate {
+				InvokeOnMainThread(delegate {
+					this.TimeLbl.Text = "Updating...";	
+				});
+
+				InvokeInBackground (async delegate {
+					var requests = await Api.GetRequests();
+					if (KeyStore.BizCalcOnly) {
+						requests = requests.Where(
+							x=>x.Location.Contains("36") || 
+							x.Location.Contains("40") || 
+							x.Location.Contains("44") ||
+							x.Location.Contains("47") ||
+							x.Location.Contains("48")
+						).ToList();
+					}
+
+					if (KeyStore.HideBizCalc) {
+						requests = requests.Where(
+							x=> x.IsBizCalc() == false
+						).ToList();
+					}
+
+					InvokeOnMainThread(delegate {
+						foreach (var v in this.View.Subviews) {
+							if (v.GetType() == typeof(BlimpView)) {
+								v.RemoveFromSuperview();
+							}
+						}
+
+						if (Api.Updated != new DateTime(0)) {
+							for (int i = 0; i < Math.Min(requests.Count, 10); ++i)
+							{
+								var b = new BlimpView(requests[i].Location);
+								string pod = requests[i].Location.Substring(0, requests[i].Location.Length-1);
+								if (pod == "36" || pod == "40" || pod == "44" || pod == "48" || pod == "47") {
+									b.BackgroundColor = b.BackgroundColor;
+								}
+								b.Frame = new CoreGraphics.CGRect(3 + (45*(i % 5)), 25 + (45*(i/5)), 40, 40);
+								this.View.Add(b);
+							}
+							this.TimeLbl.Text = Api.Updated.ToString("G");
+						} else {
+							this.TimeLbl.Text = "Update Failed";
+						}
+					});
+				});
+			});
+
+			InvokeInBackground (async delegate {
+				InvokeOnMainThread(delegate {
+					this.TimeLbl.Text = "Updating...";	
+				});
+					
+				var requests = await Api.GetRequests();
+				InvokeOnMainThread(delegate {
+					foreach (var v in this.View.Subviews) {
+						if (v.GetType() == typeof(BlimpView)) {
+							v.RemoveFromSuperview();
+						}
+					}
+
+					if (Api.Updated != new DateTime(0)) {
+						for (int i = 0; i < Math.Min(requests.Count, 10); ++i)
+						{
+							var b = new BlimpView(requests[i].Location);
+							b.Frame = new CoreGraphics.CGRect(3 + (45*(i % 5)), 25 + (45*(i/5)), 40, 40);
+							this.View.Add(b);
+						}
+
+						this.TimeLbl.Text = Api.Updated.ToString("G");
+					} else {
+						this.TimeLbl.Text = "Update Failed";
+					}
+				});
+			});
 		}
-
+			
 		[Export ("widgetPerformUpdateWithCompletionHandler:")]
 		public void WidgetPerformUpdate (Action<NCUpdateResult> completionHandler)
 		{
-			// Perform any setup necessary in order to update the view.
+			InvokeOnMainThread (delegate {
+				this.TimeLbl.Text = "Updating...";
+			});
 
-			// If an error is encoutered, use NCUpdateResultFailed
-			// If there's no update required, use NCUpdateResultNoData
-			// If there's an update, use NCUpdateResultNewData
+			InvokeInBackground (async delegate {
+				var requests = await Api.GetRequests();
+				if (KeyStore.BizCalcOnly) {
+					requests = requests.Where(
+						x=>x.Location.Contains("36") || 
+						x.Location.Contains("40") || 
+						x.Location.Contains("44") ||
+						x.Location.Contains("47") ||
+						x.Location.Contains("48")
+					).ToList();
+				}
 
-			completionHandler (NCUpdateResult.NewData);
+				InvokeOnMainThread(delegate {
+					foreach (var v in this.View.Subviews) {
+						if (v.GetType() == typeof(BlimpView)) {
+							v.RemoveFromSuperview();
+						}
+					}
+
+					if (Api.Updated != new DateTime(0)) {
+						for (int i = 0; i < Math.Min(requests.Count, 10); ++i)
+						{
+							var b = new BlimpView(requests[i].Location);
+							b.Frame = new CoreGraphics.CGRect(3 + (45*(i % 5)), 25 + (45*(i/5)), 40, 40);
+							this.View.Add(b);
+						}
+						completionHandler(NCUpdateResult.NewData);
+						this.TimeLbl.Text = Api.Updated.ToString("G");
+					} else {
+						this.TimeLbl.Text = "Update Failed";
+					}
+				});
+			});
 		}
 	}
 }

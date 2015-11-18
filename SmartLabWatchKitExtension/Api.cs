@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -19,32 +20,36 @@ namespace SmartLabWatchKitExtension
 			Updated = new DateTime (0);
 		}
 
+		/// <summary>
+		/// Gets list of help requests from Smart Lab website.
+		/// Sets Updated DateTime on success, 0 if failed.
+		/// </summary>
+		/// <returns>List of help requests</returns>
 		async public static Task<List<Request>> GetRequests() {
-			Client.Timeout = TimeSpan.FromSeconds (7);
-			string url = "http://azizmb.com/request.php";
+			Client.Timeout = TimeSpan.FromSeconds (5);
+			string url = "http://usfweb.usf.edu/labdisplay/view/lib232-full.aspx";
 			try {
-				var resp = await Client.GetAsync (url);
+				var resp = await Client.GetAsync(url);
 				Updated = DateTime.Now;
-				//return JsonConvert.DeserializeObject(await resp.Content.ReadAsStringAsync(), typeof(List<Request>)) as List<Request>;
-				var list = new List<Request>();
-				for (int i = 10; i < 23; i++) {
-					list.Add(new Request() { Created = DateTime.Now, Location = i.ToString() + "F" });
+				string content = await resp.Content.ReadAsStringAsync();
+				var Requests = new List<Request>();
+				Regex regex = new Regex(@"(?!<td>)\d{1,2}\w(?=</td>)|(?!<td>)\d{2}/\d{2}\s\d{2}:\d{2}:\d{2}\s[AP]M(?=</td>)");
+				MatchCollection match = regex.Matches(content);
+
+
+				for (int i = 0; i < match.Count / 2; i++)
+				{
+					string loc = match[i*2].Value;
+					string dtString = match[(i*2)+1].Value;
+					dtString = dtString.Insert(5, "/" + DateTime.Today.Year);
+					DateTime date = DateTime.ParseExact(dtString, "MM/dd/yyyy hh:mm:ss tt", System.Globalization.CultureInfo.InvariantCulture);
+					Requests.Add(new Request() { Location = loc, Created = date });
 				}
-				return list;
+
+				return Requests;
 			} catch {
 				Updated = new DateTime (0);
 				return new List<Request> ();
-			}
-		}
-
-		async public static Task<List<Event>> GetCalendar() {
-			Client.Timeout = TimeSpan.FromSeconds (3);
-			try {
-				var resp = await Client.GetAsync ("http://azizmb.com/calendar.json");
-				var ev = (JsonConvert.DeserializeObject (await resp.Content.ReadAsStringAsync (), typeof(List<Event>)) as List<Event>).OrderBy(x=>x.Date).ToList();
-				return ev;
-			} catch {
-				return new List<Event> ();
 			}
 		}
 	}
