@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Foundation;
 using UIKit;
 using NotificationCenter;
+using SafariServices;
 
 namespace SmartLab
 {
@@ -15,6 +16,9 @@ namespace SmartLab
 	{
 		public Response Response; 
 
+		/// <summary>
+		/// Retrieves updated data & updates interface.
+		/// </summary>
 		private void UpdateData()
 		{
 			UIApplication.SharedApplication.NetworkActivityIndicatorVisible = true;
@@ -56,6 +60,10 @@ namespace SmartLab
 			});
 		}
 
+		/// <summary>
+		/// ViewController constructor, starts timer to refresh every 5 seconds.
+		/// </summary>
+		/// <param name="handle">Handle.</param>
 		public RequestsViewCtrl (IntPtr handle) : base (handle)
 		{
 			NSTimer.CreateRepeatingScheduledTimer (5, x => UpdateData ());
@@ -64,6 +72,8 @@ namespace SmartLab
 		public override void ViewDidLoad ()
 		{
 			base.ViewDidLoad ();
+
+			// Show an action sheet with Schedule, Calendar & more when navbar button is clicked.
 			this.NavigationItem.RightBarButtonItem.Clicked += (sender, e) => {
 				UIActionSheet a = new UIActionSheet("Options");
 				nint s = a.AddButton("Schedule"), co = a.AddButton("Call-Out"),c = a.AddButton("Calendar"), b = a.AddButton("Change Filters");
@@ -71,12 +81,15 @@ namespace SmartLab
 
 				a.Clicked += (sr, ev) => {
 					if (ev.ButtonIndex == s) {
-						UIApplication.SharedApplication.OpenUrl(new NSUrl(Api.SCHEDULE_URL));
-						//this.PerformSegue("Schedule", this);
+						if (UIDevice.CurrentDevice.CheckSystemVersion(9,0)) {
+							var sfViewCtrl = new SFSafariViewController (new NSUrl(Api.SCHEDULE_URL));
+							PresentViewControllerAsync (sfViewCtrl, true);
+						} else {
+							UIApplication.SharedApplication.OpenUrl(new NSUrl(Api.SCHEDULE_URL));
+						}
 					} else if (ev.ButtonIndex == c) {
 						this.PerformSegue("Calendar", this);
 					} else if (ev.ButtonIndex == co) {
-						//UIApplication.SharedApplication.OpenUrl(new NSUrl(Api.CALLOUT_URL));
 						this.NavigationController.PushViewController(new CalloutViewCtrl(), true);
 					} else if (ev.ButtonIndex == b) {
 						UIActionSheet aSheet = new UIActionSheet("Options");
@@ -100,6 +113,7 @@ namespace SmartLab
 				a.ShowInView(this.View);
 			};
 
+			// Refresh Data if the RefreshControl is manually pulled down.
 			this.RefreshControl.ValueChanged += (sender, e) => {
 				this.UpdateData();
 			};
