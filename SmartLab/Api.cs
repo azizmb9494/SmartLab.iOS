@@ -34,8 +34,8 @@ namespace SmartLab
 		/// Fills out Call Out form with inputed information.
 		/// </summary>
 		/// <returns>Did it succeed?</returns>
-		/// <param name="first">First Name.</param>
-		/// <param name="last">Last Name.</param>
+		/// <param name="firstName">First Name.</param>
+		/// <param name="lastName">Last Name.</param>
 		/// <param name="email">Email Address.</param>
 		/// <param name="start">Start Date.</param>
 		/// <param name="multiple">Multiple Days.</param>
@@ -95,7 +95,7 @@ namespace SmartLab
 		/// <param name="first">First Name.</param>
 		/// <param name="last">Last Name.</param>
 		/// <param name="email">Email Address.</param>
-		/// <param name="start">Date & Time Late.</param>
+		/// <param name="inTime">Date & Time Late.</param>
 		/// <param name="centers">Centers affected.</param>
 		/// <param name="reason">Reason.</param>
 		async public static Task<bool> SendLate(string first, string last, string email, DateTime inTime, bool[] centers, string reason)
@@ -108,7 +108,7 @@ namespace SmartLab
 			Values.Add(new KeyValuePair<string, string>("Field107", email));
 			Values.Add(new KeyValuePair<string, string>("Field5", reason));
 			Values.Add(new KeyValuePair<string, string>("Field320", inTime.Date.ToString("yyyyMMdd")));
-			Values.Add (new KeyValuePair<string, string> ("Field116", inTime.ToString ("HH:mm:ss")));
+			Values.Add (new KeyValuePair<string, string> ("Field116", inTime.ToLocalTime().ToString ("HH:mm:ss")));
 
 			// Centers to choose form.
 			string[] Centers = new string[] {
@@ -193,7 +193,7 @@ namespace SmartLab
 		/// <returns>List of Events.</returns>
 		async public static Task<List<Event>> GetCalendar() {
 			try {
-				var resp = await Client.GetAsync ("http://azizmb.com/calendar.json");
+				var resp = await Client.GetAsync (CALENDAR_URL);
 				var ev = (JsonConvert.DeserializeObject (await resp.Content.ReadAsStringAsync (), typeof(List<Event>)) as List<Event>).OrderBy(x=>x.Date).ToList();
 				return ev;
 			} catch {
