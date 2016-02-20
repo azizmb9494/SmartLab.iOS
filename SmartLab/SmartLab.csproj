@@ -85,19 +85,19 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
-    <Reference Include="BTProgressHUD">
-      <HintPath>..\Components\btprogresshud-1.16\lib\ios-unified\BTProgressHUD.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="ModernHttpClient">
       <HintPath>..\Components\modernhttpclient-2.4.2\lib\ios-unified\ModernHttpClient.dll</HintPath>
     </Reference>
     <Reference Include="MonoTouch.Dialog-1" />
     <Reference Include="Calabash">
-      <HintPath>..\packages\Xamarin.TestCloud.Agent.0.16.2\lib\Xamarin.iOS10\Calabash.dll</HintPath>
+      <HintPath>..\packages\Xamarin.TestCloud.Agent.0.18.0\lib\Xamarin.iOS10\Calabash.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\portable-net40+sl5+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="BTProgressHUD">
+      <HintPath>..\Components\btprogresshud-1.20\lib\ios-unified\BTProgressHUD.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -136,39 +136,39 @@
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
-    <Compile Include="RequestsViewCtrl.cs" />
-    <Compile Include="RequestsViewCtrl.designer.cs">
+    <Compile Include="Controllers\RequestsViewCtrl.cs" />
+    <Compile Include="Controllers\RequestsViewCtrl.designer.cs">
       <DependentUpon>RequestsViewCtrl.cs</DependentUpon>
     </Compile>
-    <Compile Include="RequestSource.cs" />
-    <Compile Include="Class.cs" />
-    <Compile Include="Api.cs" />
-    <Compile Include="CalSource.cs" />
-    <Compile Include="CalViewCtrl.cs" />
-    <Compile Include="CalViewCtrl.designer.cs">
-      <DependentUpon>CalViewCtrl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Cache.cs" />
-    <Compile Include="BlimpView.cs" />
-    <Compile Include="ScheduleViewCtrl.cs" />
-    <Compile Include="ScheduleViewCtrl.designer.cs">
-      <DependentUpon>ScheduleViewCtrl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CalloutViewCtrl.cs" />
-    <Compile Include="CalloutViewCtrl.designer.cs">
+    <Compile Include="Controllers\CalloutViewCtrl.cs" />
+    <Compile Include="Controllers\CalloutViewCtrl.designer.cs">
       <DependentUpon>CalloutViewCtrl.cs</DependentUpon>
     </Compile>
-    <Compile Include="KeyStore.cs" />
+    <Compile Include="Controllers\ScheduleViewCtrl.cs" />
+    <Compile Include="Controllers\ScheduleViewCtrl.designer.cs">
+      <DependentUpon>ScheduleViewCtrl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\CalViewCtrl.cs" />
+    <Compile Include="Controllers\CalViewCtrl.designer.cs">
+      <DependentUpon>CalViewCtrl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CalSource.cs" />
+    <Compile Include="Views\BlimpView.cs" />
+    <Compile Include="Views\RequestSource.cs" />
+    <Compile Include="Helpers\Api.cs" />
+    <Compile Include="Helpers\Cache.cs" />
+    <Compile Include="Helpers\Class.cs" />
+    <Compile Include="Helpers\KeyStore.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <ItemGroup>
-    <XamarinComponentReference Include="btprogresshud">
-      <Version>1.16</Version>
-      <Visible>False</Visible>
-    </XamarinComponentReference>
     <XamarinComponentReference Include="modernhttpclient">
       <Version>2.4.2</Version>
+      <Visible>False</Visible>
+    </XamarinComponentReference>
+    <XamarinComponentReference Include="btprogresshud">
+      <Version>1.20</Version>
       <Visible>False</Visible>
     </XamarinComponentReference>
   </ItemGroup>
@@ -187,5 +187,10 @@
     <BundleResource Include="Resources\Default%402x.png" />
     <BundleResource Include="Resources\Default-568h%402x.png" />
     <BundleResource Include="Resources\calendar.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="Views\" />
+    <Folder Include="Helpers\" />
   </ItemGroup>
 </Project>

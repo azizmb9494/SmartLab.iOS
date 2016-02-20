@@ -22,11 +22,11 @@ namespace SmartLab
 
 			this.Events = Cache.GetEvents ();
 			this.SearchDisplayController.SearchBar.TextChanged += (sender, e) => {
-				this.SearchDisplayController.SearchResultsTableView.Source = new CalSource(this.Events, e.SearchText);
+				this.SearchDisplayController.SearchResultsTableView.Source = new CalSource(this, e.SearchText);
 				this.SearchDisplayController.SearchResultsTableView.ReloadData();
 			};
 
-			this.TableView.Source = new CalSource (this.Events);
+			this.TableView.Source = new CalSource (this);
 			this.TableView.ReloadData ();
 
 			InvokeInBackground (async delegate {
@@ -39,7 +39,7 @@ namespace SmartLab
 				}
 				this.Events = Cache.GetEvents();
 				InvokeOnMainThread(delegate {
-					this.TableView.Source = new CalSource (this.Events);
+					this.TableView.Source = new CalSource (this);
 					this.TableView.ReloadData ();
 					UIApplication.SharedApplication.NetworkActivityIndicatorVisible = false;
 				});
