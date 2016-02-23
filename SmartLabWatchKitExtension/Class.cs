@@ -33,8 +33,8 @@ namespace SmartLabWatchKitExtension
 		public bool IsBizCalc()
 		{
 			// Array of Biz Calc Pods
-			int BCPods = new int[] { 35, 39, 43, 36, 40, 44, 47, 48 };
-			//int BCPods = new int[] { 36, 40, 44, 47, 48 };
+			int[] BCPods = new int[] { 35, 39, 43, 36, 40, 44, 47, 48 };
+			//int[] BCPods = new int[] { 36, 40, 44, 47, 48 };
 			
 			int pod = Int32.Parse(this.Location.Substring (0, this.Location.Length - 1));
 			foreach (var p in BCPods) {
