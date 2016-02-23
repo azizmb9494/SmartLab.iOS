@@ -2,9 +2,6 @@
 
 using System;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using Foundation;
 using UIKit;
 using NotificationCenter;
@@ -27,12 +24,7 @@ namespace SmartLab
 				this.Response = await Api.GetRequests();
 				if (KeyStore.BizCalcOnly) {
 					this.Response.Requests = this.Response.Requests.Where(
-						x=>x.Location.Contains("36") || 
-						x.Location.Contains("40") || 
-						x.Location.Contains("44") ||
-						x.Location.Contains("47") ||
-						x.Location.Contains("48")
-					).ToList();
+						x=> x.IsBizCalc()).ToList();
 				}
 					
 				if (KeyStore.HideBizCalc) {

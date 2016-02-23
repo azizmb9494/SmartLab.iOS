@@ -49,13 +49,7 @@ namespace SmartLabToday
 				InvokeInBackground (async delegate {
 					var requests = await Api.GetRequests();
 					if (KeyStore.BizCalcOnly) {
-						requests = requests.Where(
-							x=>x.Location.Contains("36") || 
-							x.Location.Contains("40") || 
-							x.Location.Contains("44") ||
-							x.Location.Contains("47") ||
-							x.Location.Contains("48")
-						).ToList();
+						requests = requests.Where(x=>x.IsBizCalc()).ToList();
 					}
 
 					if (KeyStore.HideBizCalc) {
@@ -75,8 +69,7 @@ namespace SmartLabToday
 							for (int i = 0; i < Math.Min(requests.Count, 10); ++i)
 							{
 								var b = new BlimpView(requests[i].Location);
-								string pod = requests[i].Location.Substring(0, requests[i].Location.Length-1);
-								if (pod == "36" || pod == "40" || pod == "44" || pod == "48" || pod == "47") {
+								if (requests[i].IsBizCalc()) {
 									b.BackgroundColor = b.BackgroundColor;
 								}
 								b.Frame = new CoreGraphics.CGRect(3 + (45*(i % 5)), 25 + (45*(i/5)), 40, 40);

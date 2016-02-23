@@ -1,5 +1,6 @@
 ﻿using Foundation;
 using UIKit;
+using SafariServices;
 
 namespace SmartLab
 {
@@ -91,7 +92,12 @@ namespace SmartLab
 			// Take action based on the shortcut type
 			switch (shortcutItem.Type) {
 			case "edu.usf.smartlab.000":
-				UIApplication.SharedApplication.OpenUrl(new NSUrl(Api.SCHEDULE_URL));
+				if (UIDevice.CurrentDevice.CheckSystemVersion(9,0)) {
+					var sfViewCtrl = new SFSafariViewController (new NSUrl(Api.SCHEDULE_URL));
+					this._Controller.PresentViewControllerAsync (sfViewCtrl, true);
+				} else {
+					UIApplication.SharedApplication.OpenUrl(new NSUrl(Api.SCHEDULE_URL));
+				}
 				handled = true;
 				break;
 			case "edu.usf.smartlab.001":
