@@ -10,10 +10,10 @@ namespace SmartLab
 	public class Response
 	{
 		public List<Request> Requests = new List<Request>();	// List of help requests.
-		public int InUse = 0;									// Number of computers in use.
-		public int Help = 0;									// Number of computers needing help.
-		public int Idle = 0; 									// Number of computers idle.
-		public int Offline = 0;									// Number of computers offline.
+		public int InUse = 0;					// Number of computers in use.
+		public int Help = 0;					// Number of computers needing help.
+		public int Idle = 0; 					// Number of computers idle.
+		public int Offline = 0;					// Number of computers offline.
 	}
 	public class FormResponse
 	{
@@ -29,8 +29,8 @@ namespace SmartLab
 		[JsonProperty("time")]
 		public DateTime Created { get; set; }			// Timestamp
 		[JsonIgnore()]
-		public int Count { get; set; }					// Number of times help has been requested.
-
+		public int Count { get; set; }				// Number of times help has been requested.
+		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SmartLab.Request"/> class.
 		/// </summary>
@@ -66,8 +66,17 @@ namespace SmartLab
 		/// <returns><c>true</c> if Biz Calc otherwise, <c>false</c>.</returns>
 		public bool IsBizCalc()
 		{
-			string pod = this.Location.Substring (0, this.Location.Length - 1);
-			return pod == "36" || pod == "40" || pod == "44" || pod == "47" || pod == "48"; 
+			// Array of Biz Calc Pods
+			int BCPods = new int[] { 35, 39, 43, 36, 40, 44, 47, 48 };
+			//int BCPods = new int[] { 36, 40, 44, 47, 48 };
+			
+			int pod = Int32.Parse(this.Location.Substring (0, this.Location.Length - 1));
+			foreach (var p in BCPods) {
+				if (pod == p) {
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 
