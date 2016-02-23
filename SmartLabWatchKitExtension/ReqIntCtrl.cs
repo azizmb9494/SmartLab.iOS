@@ -29,12 +29,7 @@ namespace SmartLabWatchKitExtension
 					var requests = await Api.GetRequests();
 					if (KeyStore.BizCalcOnly) {
 						requests = requests.Where(
-							x=>x.Location.Contains("36") || 
-							x.Location.Contains("40") || 
-							x.Location.Contains("44") ||
-							x.Location.Contains("47") ||
-							x.Location.Contains("48")
-						).ToList();
+							x=>x.IsBizCalc()).ToList();
 					}
 
 					if (KeyStore.HideBizCalc) {
@@ -47,8 +42,7 @@ namespace SmartLabWatchKitExtension
 						if (Api.Updated != new DateTime(0)) {
 							for (int i = 0; i < Math.Min(requests.Count, 9); ++i)
 							{
-								string pod = requests[i].Location.Substring(0, requests[i].Location.Length-1);
-								if (pod == "36" || pod == "40" || pod == "44" || pod == "48" || pod == "47") {
+								if (requests[i].IsBizCalc()) {
 									this.Buttons[i].SetBackgroundColor(UIColor.FromRGB (111, 38, 135));
 								} else {
 									this.Buttons[i].SetBackgroundColor(UIColor.Red);
